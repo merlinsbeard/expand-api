@@ -3,6 +3,7 @@ from apistar.docs import docs_routes
 from apistar.statics import static_routes
 
 from external.gw2 import GW2
+from external.weather import Weather
 
 
 def welcome(name=None):
@@ -41,12 +42,33 @@ class Profile(schema.Object):
 def create_profile(profile: Profile):
     return profile
 
+def weather(area):
+    """
+    Wrapper for weather API
+
+    Response:
+
+    ```
+    {
+        "area": "manila",
+        "conditions": "scattered clouds",
+        "temperature": 31
+    }
+
+    """
+    appid = os.getenv("WEATHER_APP_ID","5be49f19e5f9f928228c830fb67cf008")
+    w = Weather(area, appid)
+    return w.weather_condition()
+
+
 routes = [
     # gw2/
     Route('/gw2/raid', 'POST', gw2_raid),
     Route('/gw2/t4', 'POST', gw2_daily_fracs),
     # profile/
     Route('/profile', 'POST', create_profile),
+    # weather/
+    Route('/weather', 'GET', weather),
 
     # Default
     Route('/', 'GET', welcome),
