@@ -5,6 +5,8 @@ from apistar.statics import static_routes
 from external.gw2 import GW2
 from external.weather import Weather
 from external.rh import HubGet
+from envparse import env
+env.read_envfile("local.env")
 
 
 def welcome(name=None):
@@ -12,18 +14,20 @@ def welcome(name=None):
         return {'message': 'Welcome to API Star!'}
     return {'message': 'Welcome to API Star, %s!' % name}
 
-def gw2_raid(key):
+def gw2_raid():
     """
     Returns a Response of boss kills
     """
+    key = env("GW2_KEY")
     payload = GW2(key)
     payload = payload.get_raid_kills()
     return payload
 
-def gw2_daily_fracs(key):
+def gw2_daily_fracs():
     """
     Returns a response of current t4 fractal dailies
     """
+    key = env("GW2_KEY")
     payload = GW2(key)
     payload = payload.get_t4_daily()
     return payload
@@ -57,7 +61,7 @@ def weather(area):
     }
 
     """
-    appid = os.getenv("WEATHER_APP_ID","5be49f19e5f9f928228c830fb67cf008")
+    appid = env("WEATHER_APP_ID")
     w = Weather(area, appid)
     return w.weather_condition()
 
@@ -87,8 +91,8 @@ def kafka_consumer(kafka: KafkaConsumer):
 
 routes = [
     # gw2/
-    Route('/gw2/raid', 'POST', gw2_raid),
-    Route('/gw2/t4', 'POST', gw2_daily_fracs),
+    Route('/gw2/raid', 'GET', gw2_raid),
+    Route('/gw2/t4', 'GET', gw2_daily_fracs),
     # profile/
     Route('/profile', 'POST', create_profile),
     # weather/
