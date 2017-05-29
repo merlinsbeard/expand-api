@@ -4,6 +4,7 @@ from apistar.statics import static_routes
 
 from external.gw2 import GW2
 from external.weather import Weather
+from external.rh import HubGet
 
 
 def welcome(name=None):
@@ -61,6 +62,29 @@ def weather(area):
     return w.weather_condition()
 
 
+def hub_get(
+        partner_id: schema.String,
+        source_reference_number,
+        key):
+    """
+    Get a remittance transaction
+    """
+
+    h = HubGet(partner_id=partner_id,
+            source_reference_number=source_reference_number,
+            authorization=key)
+    return h.get_remittance()
+
+
+class KafkaConsumer(schema.Object):
+    properties = {
+            'url': schema.String(max_length=100),
+            'topics': schema.String(max_length=100)
+            }
+
+def kafka_consumer(kafka: KafkaConsumer):
+    pass
+
 routes = [
     # gw2/
     Route('/gw2/raid', 'POST', gw2_raid),
@@ -69,6 +93,9 @@ routes = [
     Route('/profile', 'POST', create_profile),
     # weather/
     Route('/weather', 'GET', weather),
+
+    # hub
+    Route('/hub/get','POST',hub_get),
 
     # Default
     Route('/', 'GET', welcome),
