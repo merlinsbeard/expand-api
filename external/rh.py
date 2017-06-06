@@ -17,11 +17,17 @@ class HubGet():
 
     def get_remittance(self):
         url = env("RH_URL")
+        key = env("RH_KEY")
+        crt = env("RH_CRT")
         payload = {
                 "partner_id": self.partner_id,
                 "source_reference_number": self.source_reference_number}
         headers = {
                 "content-type": "application/json",
                 "AUTHORIZATION": self.authorization}
-        response = requests.post(url, data=json.dumps(payload), headers=headers)
+        response = requests.post(
+                                url,
+                                data=json.dumps(payload),
+                                headers=headers,
+                                cert=(crt, key))
         return response.json()
