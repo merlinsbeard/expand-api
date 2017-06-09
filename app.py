@@ -5,8 +5,10 @@ from apistar.statics import static_routes
 from external.gw2 import GW2
 from external.weather import Weather
 from external.rh import HubGet
+from external.reddit import Reddit
+
 from envparse import env
-env.read_envfile("local.env")
+env.read_envfile("prod.env")
 
 
 def welcome(name=None):
@@ -89,6 +91,21 @@ class KafkaConsumer(schema.Object):
 def kafka_consumer(kafka: KafkaConsumer):
     pass
 
+
+def reddit_comment(comment_id):
+    '''
+    Returns a response of writing prompts
+    comment with details
+    '''
+    reddit_secret = env('REDDIT_SECRET')
+    reddit_id = env('REDDIT_ID')
+    reddit_username = env('REDDIT_USERNAME')
+    reddit_password = env('REDDIT_PASSWORD')
+    r = Reddit(reddit_secret, reddit_id,
+               reddit_username, reddit_password)
+    comment = r.get_comment_body(comment_id)
+    return comment
+
 routes = [
     # gw2/
     Route('/gw2/raid', 'GET', gw2_raid),
@@ -97,6 +114,10 @@ routes = [
     Route('/profile', 'POST', create_profile),
     # weather/
     Route('/weather', 'GET', weather),
+    # hub
+    Route('/hub/get','POST',hub_get),
+    # Reddit
+    Route('/reddit/comment','GET', reddit_comment),
 
     # hub
     Route('/hub/get','POST',hub_get),
