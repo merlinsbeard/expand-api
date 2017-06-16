@@ -1,11 +1,13 @@
 from apistar import App, Include, Route, schema
 from apistar.docs import docs_routes
 from apistar.statics import static_routes
+from apistar.http import Response
 
 from external.gw2 import GW2
 from external.weather import Weather
 from external.rh import HubGet
 from external.reddit import Reddit
+from external.partner import Partner
 
 from envparse import env
 env.read_envfile("prod.env")
@@ -106,6 +108,23 @@ def reddit_comment(comment_id):
     comment = r.get_comment_body(comment_id)
     return comment
 
+def partner(partner_id):
+    p = Partner(partner_id=partner_id)
+    data = p.get_partners_one()
+    return data
+
+def branch(token) -> Response:
+    branch_url = env("BRANCH_URL")
+    p = Partner(token=token, branch_url=branch_url)
+    data = p.get_branches()
+    return Response(data=data)
+
+def branch_one(token, branch_code) -> Response:
+    branch_url = env("BRANCH_URL")
+    p = Partner(token=token, branch_url=branch_url)
+    data = p.get_branches_one(branch_code)
+    return Response(data=data)
+
 routes = [
     # gw2/
     Route('/gw2/raid', 'GET', gw2_raid),
@@ -118,9 +137,12 @@ routes = [
     Route('/hub/get','POST',hub_get),
     # Reddit
     Route('/reddit/comment','GET', reddit_comment),
-
     # hub
     Route('/hub/get','POST',hub_get),
+    # Partner
+    Route('/partner/{partner_id}', 'GET', partner),
+    Route('/branch/{token}', 'GET', branch),
+    Route('/branch/{token}/{branch_code}', 'GET', branch_one),
 
     # Default
     Route('/', 'GET', welcome),
