@@ -2,7 +2,6 @@ import requests
 import json
 
 from envparse import env
-env.read_envfile("local.env")
 
 
 class HubGet():
@@ -14,17 +13,19 @@ class HubGet():
         self.authorization = kwargs['authorization']
         self.source_reference_number = kwargs['source_reference_number']
         self.partner_id = kwargs['partner_id']
+        self.url = kwargs.get("RH_URL", None)
+        self.key = kwargs.get("RH_KEY", None)
+        self.crt = kwargs.get("RH_CRT", None)
 
     def get_remittance(self):
-        url = env("RH_URL")
-        key = env("RH_KEY")
-        crt = env("RH_CRT")
         payload = {
                 "partner_id": self.partner_id,
                 "source_reference_number": self.source_reference_number}
         headers = {
                 "content-type": "application/json",
                 "AUTHORIZATION": self.authorization}
+        response = {"url":url,"key":key,"crt":crt}
+        return response
         response = requests.post(
                                 url,
                                 data=json.dumps(payload),
