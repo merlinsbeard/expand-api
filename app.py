@@ -8,6 +8,7 @@ from external.weather import Weather
 from external.rh import HubGet
 from external.reddit import Reddit
 from external.partner import Partner
+from external.kubelogs import KubeLog
 
 from envparse import env
 env.read_envfile("prod.env")
@@ -125,6 +126,24 @@ def branch_one(token, branch_code) -> Response:
     data = p.get_branches_one(branch_code)
     return Response(data=data)
 
+def kubename(service, namespace):
+    token = env("GIST_TOKEN")
+    kubelogs = KubeLog(service=service, namespace=namespace, token=token)
+    names = kubelogs.get_replicas()
+    return names
+
+def kubelog(service, namespace):
+    token = env("GIST_TOKEN")
+    kubelogs = KubeLog(service=service, namespace=namespace, token=token)
+    names = kubelogs.get_replicas()
+    logs_url = []
+    for name in names:
+        logs = kubelogs.get_replicas_logs(name)
+        logs = kubelogs.post_in_gist(logs, name)
+        logs_url.append(logs['html_url'])
+    return logs_url
+
+
 routes = [
     # gw2/
     Route('/gw2/raid', 'GET', gw2_raid),
@@ -143,7 +162,9 @@ routes = [
     Route('/partner/{partner_id}', 'GET', partner),
     Route('/branch/{token}', 'GET', branch),
     Route('/branch/{token}/{branch_code}', 'GET', branch_one),
-
+    # KubeLogs
+    Route('/kube/replicas', 'GET', kubename),
+    Route('/kube/logs', 'POST', kubelog),
     # Default
     Route('/', 'GET', welcome),
     Include('/docs', docs_routes),
