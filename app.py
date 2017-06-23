@@ -146,7 +146,7 @@ def kubelog(service, namespace):
 
 routes = [
     # gw2/
-    Route('/gw2/raid', 'GET', gw2_raid),
+    Route('/gw2/raid-kills', 'GET', gw2_raid),
     Route('/gw2/t4', 'GET', gw2_daily_fracs),
     # profile/
     Route('/profile', 'POST', create_profile),
