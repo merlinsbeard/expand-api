@@ -23,7 +23,7 @@ class GW2(object):
         Returns a JSON of t4 daily
         """
         url_daily = "https://api.guildwars2.com/v2/achievements/daily"
-        url_category= "https://api.guildwars2.com/v2/achievements"
+        url_category = "https://api.guildwars2.com/v2/achievements"
         daily = requests.get(url_daily, headers=self.headers)
         daily = daily.json()
         fractals = daily['fractals']
@@ -46,6 +46,3 @@ class GW2(object):
                 fd_dict[count] = f["name"]
                 count += 1
         return fd_dict
-
-
-

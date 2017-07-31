@@ -1,5 +1,6 @@
 import praw
-import os
+import requests
+
 
 class Reddit(object):
 
@@ -10,7 +11,7 @@ class Reddit(object):
         self.id = reddit_id
         self.username = reddit_username
         self.password = reddit_password
-        self.user_agent='Caffeinated Eyes Comment taker'
+        self.user_agent = 'Caffeinated Eyes Comment taker'
 
     def praw(self):
         reddit = praw.Reddit(
@@ -27,12 +28,26 @@ class Reddit(object):
         submission = comment.submission
         submission = {
                 "title": submission.title,
-                "author": submission.author,
-                "permalink": "https://reddit.com" + submission.permalink,
                 "slug": submission.id}
-        comment = {
+        prompt = {
                 "permalink": "https://reddit.com" + comment.permalink(),
+                "slug": comment_id,
                 "author": comment.author.__str__(),
-                "text": comment.body}
-        return {**submission, **comment}
+                "story": comment.body
+                }
+        submission['prompt'] = prompt
+        return submission
 
+    def post_comment(self, payload={}):
+        url = ""
+        payload = {
+                "submission": {
+                    "title": payload["title"],
+                    "slug": payload["slug"],
+                    },
+                "slug": payload["prompt"]["slug"],
+                "author": payload["prompt"]["author"],
+                "story": payload["prompt"]["story"]
+                }
+        r = requests.post(url, payload)
+        return r
