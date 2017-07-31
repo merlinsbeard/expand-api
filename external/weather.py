@@ -1,7 +1,3 @@
-import urllib
-import urllib.request
-import json
-import decimal
 import requests
 
 
@@ -26,10 +22,7 @@ class Weather():
 
         weather_dict = r.json()
         current = weather_dict['main']['temp']
-        current_low = weather_dict['main']['temp_min']
-        current_high = weather_dict['main']['temp_max']
         conditions = weather_dict['weather'][0]['description']
-        location = weather_dict['name']
         current = round(current)
         weather = {
                 "area": self.area,
@@ -37,4 +30,3 @@ class Weather():
                 "temperature": current
                 }
         return weather
-

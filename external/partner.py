@@ -35,4 +35,4 @@ class Partner(object):
             if d['branch_code'] == branch_code:
                 return d
         else:
-            return {"status":"FAIL"}
+            return {"status": "FAIL"}

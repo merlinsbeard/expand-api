@@ -1,6 +1,6 @@
 import praw
-import os
 import requests
+
 
 class Reddit(object):
 
@@ -11,7 +11,7 @@ class Reddit(object):
         self.id = reddit_id
         self.username = reddit_username
         self.password = reddit_password
-        self.user_agent='Caffeinated Eyes Comment taker'
+        self.user_agent = 'Caffeinated Eyes Comment taker'
 
     def praw(self):
         reddit = praw.Reddit(
@@ -41,7 +41,7 @@ class Reddit(object):
     def post_comment(self, payload={}):
         url = ""
         payload = {
-                "submission" : {
+                "submission": {
                     "title": payload["title"],
                     "slug": payload["slug"],
                     },
@@ -51,5 +51,3 @@ class Reddit(object):
                 }
         r = requests.post(url, payload)
         return r
-
-

@@ -12,7 +12,6 @@ class KubeLog(object):
     Wrapper for kubernetes
     """
 
-
     def __init__(self, service, namespace, token):
         self.service = service
         self.namespace = namespace
@@ -56,4 +55,3 @@ class KubeLog(object):
         logger.warning("Posting in gist")
         r = requests.post(url, data=json.dumps(payload), headers=headers)
         return r.json()
-

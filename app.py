@@ -19,6 +19,7 @@ def welcome(name=None):
         return {'message': 'Welcome to API Star!'}
     return {'message': 'Welcome to API Star, %s!' % name}
 
+
 def gw2_raid():
     """
     Returns a Response of boss kills
@@ -27,6 +28,7 @@ def gw2_raid():
     payload = GW2(key)
     payload = payload.get_raid_kills()
     return payload
+
 
 def gw2_daily_fracs():
     """
@@ -51,6 +53,7 @@ class Profile(schema.Object):
 
 def create_profile(profile: Profile):
     return profile
+
 
 def weather(area):
     """
@@ -80,8 +83,8 @@ def hub_get(
     """
 
     h = HubGet(partner_id=partner_id,
-            source_reference_number=source_reference_number,
-            authorization=key)
+               source_reference_number=source_reference_number,
+               authorization=key)
     return h.get_remittance()
 
 
@@ -90,6 +93,7 @@ class KafkaConsumer(schema.Object):
             'url': schema.String(max_length=100),
             'topics': schema.String(max_length=100)
             }
+
 
 def kafka_consumer(kafka: KafkaConsumer):
     pass
@@ -109,10 +113,12 @@ def reddit_comment(comment_id):
     comment = r.get_comment_body(comment_id)
     return comment
 
+
 def partner(partner_id):
     p = Partner(partner_id=partner_id)
     data = p.get_partners_one()
     return data
+
 
 def branch(token) -> Response:
     branch_url = env("BRANCH_URL")
@@ -120,17 +126,20 @@ def branch(token) -> Response:
     data = p.get_branches()
     return Response(data=data)
 
+
 def branch_one(token, branch_code) -> Response:
     branch_url = env("BRANCH_URL")
     p = Partner(token=token, branch_url=branch_url)
     data = p.get_branches_one(branch_code)
     return Response(data=data)
 
+
 def kubename(service, namespace):
     token = env("GIST_TOKEN")
     kubelogs = KubeLog(service=service, namespace=namespace, token=token)
     names = kubelogs.get_replicas()
     return names
+
 
 def kubelog(service, namespace):
     token = env("GIST_TOKEN")
@@ -153,11 +162,11 @@ routes = [
     # weather/
     Route('/weather', 'GET', weather),
     # hub
-    Route('/hub/get','POST',hub_get),
+    Route('/hub/get', 'POST', hub_get),
     # Reddit
-    Route('/reddit/comment','GET', reddit_comment),
+    Route('/reddit/comment', 'GET', reddit_comment),
     # hub
-    Route('/hub/get','POST',hub_get),
+    Route('/hub/get', 'POST', hub_get),
     # Partner
     Route('/partner/{partner_id}', 'GET', partner),
     Route('/branch/{token}', 'GET', branch),
