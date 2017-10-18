@@ -1,7 +1,6 @@
-from apistar import App, Include, Route, schema
-from apistar.docs import docs_routes
-from apistar.statics import static_routes
-from apistar.http import Response
+from apistar import Include, Route, Response, typesystem
+from apistar.frameworks.wsgi import WSGIApp as App
+from apistar.handlers import docs_urls, static_urls
 
 from external.gw2 import GW2
 from external.weather import Weather
@@ -44,10 +43,10 @@ def gw2_daily_fracs():
 
 # Hook
 
-class Profile(schema.Object):
+class Profile(typesystem.Object):
     properties = {
-            'name': schema.String(max_length=100),
-            'age': schema.Integer(minimum=1)
+            'name': typesystem.string(max_length=100),
+            'age': typesystem.integer(minimum=1)
             }
 
 
@@ -75,7 +74,7 @@ def weather(area):
 
 
 def hub_get(
-        partner_id: schema.String,
+        partner_id: typesystem.String,
         source_reference_number,
         key):
     """
@@ -88,10 +87,10 @@ def hub_get(
     return h.get_remittance()
 
 
-class KafkaConsumer(schema.Object):
+class KafkaConsumer(typesystem.Object):
     properties = {
-            'url': schema.String(max_length=100),
-            'topics': schema.String(max_length=100)
+            'url': typesystem.string(max_length=100),
+            'topics': typesystem.string(max_length=100)
             }
 
 
@@ -152,8 +151,12 @@ def kubelog(service, namespace):
         logs_url.append(logs['html_url'])
     return logs_url
 
+def hooker_other():
+    return "HEYO"
+
 
 routes = [
+    Route('/hooker/other', 'POST', hooker_other),
     # gw2/
     Route('/gw2/raid-kills', 'GET', gw2_raid),
     Route('/gw2/t4', 'GET', gw2_daily_fracs),
@@ -165,8 +168,6 @@ routes = [
     Route('/hub/get', 'POST', hub_get),
     # Reddit
     Route('/reddit/comment', 'GET', reddit_comment),
-    # hub
-    Route('/hub/get', 'POST', hub_get),
     # Partner
     Route('/partner/{partner_id}', 'GET', partner),
     Route('/branch/{token}', 'GET', branch),
@@ -176,8 +177,8 @@ routes = [
     Route('/kube/logs', 'POST', kubelog),
     # Default
     Route('/', 'GET', welcome),
-    Include('/docs', docs_routes),
-    Include('/static', static_routes)
+    Include('/docs', docs_urls),
+    Include('/static', static_urls),
 ]
 
 app = App(routes=routes)
