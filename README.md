@@ -11,16 +11,30 @@ Add the details
    $ apistar run
 ```
 
+Using Gunicorn
+
+```bash
+  $ gunicorn app:app --workers=4 --bind=0.0.0.0:5000
+```
+
 open in browser
 
 `http://localhost:8080/docs/`
 
-## Production
+## Production 
+
+Uses Docker for production
+
+
 
 ```bash
-$ gunicorn app:app.wsgi --workers=4 --bind=0.0.0.0:5000
+  $ docker build -t expand_api:latest .
+  $ docker run --name expand_api \
+  > -p 5000:5000 \
+  # Using Environment Keys for configurations
+  > -e GW2_KEY=MY-LONG_KEY \
+  # Using volume for configurations
+  > -v prod.env:./prod.env
+  > -d expand_api:latest
 ```
 
-Open in Browser
-
-`http://localhost:5000/docs`
