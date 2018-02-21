@@ -1,4 +1,6 @@
-from apistar import Include, Route, Response, typesystem
+from logzero import logger
+
+from apistar import Include, Route, Response, typesystem, http
 from apistar.frameworks.wsgi import WSGIApp as App
 from apistar.handlers import docs_urls, static_urls
 
@@ -154,8 +156,20 @@ def kubelog(service, namespace):
 def hooker_other():
     return "HEYO"
 
+def open(request: http.Body):
+    """ Open Webhook endpoint
+
+    Accepts any post message
+    """
+    logger.info("Webhook")
+    import ujson
+    request = ujson.loads(request)
+    logger.debug(request)
+    return {"a": request['result']['fulfillment']['speech']}
+
 
 routes = [
+    Route('/open', 'POST', open),
     Route('/hooker/other', 'POST', hooker_other),
     # gw2/
     Route('/gw2/raid-kills', 'GET', gw2_raid),
