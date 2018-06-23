@@ -159,13 +159,13 @@ def hooker_other():
 def open(request: http.Body):
     """ Open Webhook endpoint
 
-    Accepts any post message
+    Accepts any post message then do something about it
     """
     logger.info("Webhook")
     import ujson
     request = ujson.loads(request)
     logger.debug(request)
-    return {"a": request['result']['fulfillment']['speech']}
+    return {"hallo": request}
 
 
 routes = [
